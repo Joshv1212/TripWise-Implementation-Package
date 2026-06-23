@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TripWise | Drive vs Fly Decision Support</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo">T</div>
+      <div>
+        <h1>TripWise</h1>
+        <p>Smart Decisions. Better Trips.</p>
+      </div>
+    </div>
+    <nav>
+      <a class="active">Trip Overview</a>
+      <a>Cost Breakdown</a>
+      <a>Recommendation</a>
+      <a>Hotel & Stops</a>
+      <a>Implementation Demo</a>
+    </nav>
+    <div class="data-card">
+      <span>Prototype</span>
+      <strong>HTML • CSS • JS</strong>
+      <small>Runs locally in any modern browser</small>
+    </div>
+  </aside>
+
+  <main class="app">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Drive vs Fly Decision Intelligence</p>
+        <h2>Philadelphia, PA → Orlando, FL</h2>
+        <p class="subtext">Compare the true cost, time, and convenience of driving versus flying.</p>
+      </div>
+      <div class="hero-badge">
+        <span id="bestMode">DRIVE</span>
+        <small>recommended option</small>
+      </div>
+    </section>
+
+    <section class="grid">
+      <form class="panel inputs" id="tripForm">
+        <h3>Trip Information</h3>
+        <div class="form-grid">
+          <label>Origin <input id="origin" value="Philadelphia, PA" /></label>
+          <label>Destination <input id="destination" value="Orlando, FL" /></label>
+          <label>Travelers <input id="travelers" type="number" min="1" value="2" /></label>
+          <label>Distance (miles) <input id="distance" type="number" value="1070" /></label>
+          <label>Vehicle MPG <input id="mpg" type="number" value="28" /></label>
+          <label>Fuel Price/Gallon <input id="fuel" type="number" step="0.01" value="3.45" /></label>
+          <label>Road Trip Hotel Nights <input id="hotelNights" type="number" min="0" value="1" /></label>
+          <label>Hotel Cost/Night <input id="hotelCost" type="number" value="129" /></label>
+          <label>Flight Ticket/Person <input id="airfare" type="number" value="220" /></label>
+          <label>Baggage/Person <input id="baggage" type="number" value="40" /></label>
+          <label>Airport Parking <input id="parking" type="number" value="60" /></label>
+          <label>Rental Car / Rideshare <input id="rental" type="number" value="180" /></label>
+        </div>
+
+        <h3>Preference Weighting</h3>
+        <div class="sliders">
+          <label>Cost importance <input id="costWeight" type="range" min="1" max="5" value="5"></label>
+          <label>Speed importance <input id="speedWeight" type="range" min="1" max="5" value="3"></label>
+          <label>Flexibility importance <input id="flexWeight" type="range" min="1" max="5" value="4"></label>
+        </div>
+        <button type="button" id="calculateBtn">Calculate Recommendation</button>
+      </form>
+
+      <section class="panel recommendation">
+        <h3>Best Recommendation</h3>
+        <div class="decision" id="decisionBox">
+          <span class="pill drive">DRIVE</span>
+          <h2 id="headline">Driving is recommended</h2>
+          <p id="reason">TripWise compares true cost, total time, hidden expenses, and flexibility.</p>
+        </div>
+        <div class="kpis">
+          <div><small>Drive Cost</small><strong id="driveCost">$510</strong></div>
+          <div><small>Fly Cost</small><strong id="flyCost">$570</strong></div>
+          <div><small>Drive Time</small><strong id="driveTime">17h</strong></div>
+          <div><small>Fly Time</small><strong id="flyTime">6h</strong></div>
+        </div>
+      </section>
+
+      <section class="panel compare drive-panel">
+        <h3>Drive Breakdown</h3>
+        <ul id="driveBreakdown"></ul>
+      </section>
+
+      <section class="panel compare fly-panel">
+        <h3>Fly Breakdown</h3>
+        <ul id="flyBreakdown"></ul>
+      </section>
+
+      <section class="panel wide">
+        <h3>Hotel & Pit Stop Suggestions</h3>
+        <div class="cards">
+          <div class="mini-card">
+            <span>Recommended Hotel</span>
+            <strong>Hilton Garden Inn Savannah Airport</strong>
+            <p>Good overnight stop around the midpoint of the road trip.</p>
+          </div>
+          <div class="mini-card">
+            <span>Pit Stop 1</span>
+            <strong>Richmond, VA</strong>
+            <p>Suggested stop after about 3.5 hours for fuel and food.</p>
+          </div>
+          <div class="mini-card">
+            <span>Pit Stop 2</span>
+            <strong>Daytona Beach, FL</strong>
+            <p>Suggested break before final arrival into Orlando.</p>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
