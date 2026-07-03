@@ -1,75 +1,14 @@
-const $ = (id) => document.getElementById(id);
-
-function money(value) {
-  return `$${Math.round(value).toLocaleString()}`;
-}
-
-function number(id) {
-  return Number($(id).value || 0);
-}
-
-function calculateTrip() {
-  const travelers = number('travelers');
-  const distance = number('distance');
-  const mpg = number('mpg');
-  const fuel = number('fuel');
-  const hotelNights = number('hotelNights');
-  const hotelCost = number('hotelCost');
-  const airfare = number('airfare');
-  const baggage = number('baggage');
-  const parking = number('parking');
-  const rental = number('rental');
-
-  const tolls = distance > 600 ? 55 : 25;
-  const food = travelers * Math.ceil(distance / 500) * 30;
-  const vehicleWear = distance * 0.11;
-  const gas = (distance / Math.max(mpg, 1)) * fuel;
-  const driveHotel = hotelNights * hotelCost;
-  const driveTotal = gas + tolls + food + vehicleWear + driveHotel;
-
-  const rideShare = 70;
-  const flyTotal = (airfare * travelers) + (baggage * travelers) + parking + rental + rideShare;
-
-  const driveHours = Math.ceil(distance / 63);
-  const flyHours = 6;
-
-  const costWeight = number('costWeight');
-  const speedWeight = number('speedWeight');
-  const flexWeight = number('flexWeight');
-
-  // Lower score is better. Cost and time are normalized to avoid one factor dominating.
-  const driveScore = (driveTotal / 100) * costWeight + driveHours * speedWeight - (8 * flexWeight);
-  const flyScore = (flyTotal / 100) * costWeight + flyHours * speedWeight - (4 * flexWeight);
-
-  const recommendDrive = driveScore <= flyScore;
-  const mode = recommendDrive ? 'DRIVE' : 'FLY';
-  const savings = Math.abs(driveTotal - flyTotal);
-  const timeDiff = Math.abs(driveHours - flyHours);
-
-  $('bestMode').textContent = mode;
-  $('headline').textContent = recommendDrive ? 'Driving is recommended' : 'Flying is recommended';
-  $('reason').textContent = recommendDrive
-    ? `Driving saves about ${money(savings)} and gives more flexibility, but flying saves about ${timeDiff} hours.`
-    : `Flying saves about ${timeDiff} hours. Driving may still be cheaper by ${money(savings)}, depending on preference weighting.`;
-
-  const pill = document.querySelector('.pill');
-  pill.textContent = mode;
-  pill.className = `pill ${recommendDrive ? 'drive' : 'fly'}`;
-
-  $('driveCost').textContent = money(driveTotal);
-  $('flyCost').textContent = money(flyTotal);
-  $('driveTime').textContent = `${driveHours}h`;
-  $('flyTime').textContent = `${flyHours}h`;
-
-  $('driveBreakdown').innerHTML = [
-    ['Gas', gas], ['Tolls', tolls], ['Food', food], ['Hotel', driveHotel], ['Vehicle wear', vehicleWear], ['Total', driveTotal]
-  ].map(([label, value]) => `<li><span>${label}</span><strong>${money(value)}</strong></li>`).join('');
-
-  $('flyBreakdown').innerHTML = [
-    ['Airfare', airfare * travelers], ['Baggage', baggage * travelers], ['Airport parking', parking], ['Rental car', rental], ['Rideshare', rideShare], ['Total', flyTotal]
-  ].map(([label, value]) => `<li><span>${label}</span><strong>${money(value)}</strong></li>`).join('');
-}
-
-$('calculateBtn').addEventListener('click', calculateTrip);
-document.querySelectorAll('input').forEach(i => i.addEventListener('input', calculateTrip));
-calculateTrip();
+const cityOptions=['New York, NY','Los Angeles, CA','Chicago, IL','Houston, TX','Phoenix, AZ','Philadelphia, PA','San Antonio, TX','San Diego, CA','Dallas, TX','Austin, TX','Jacksonville, FL','Fort Worth, TX','Columbus, OH','Charlotte, NC','San Francisco, CA','Indianapolis, IN','Seattle, WA','Denver, CO','Washington, DC','Boston, MA','Nashville, TN','Detroit, MI','Portland, OR','Las Vegas, NV','Baltimore, MD','Milwaukee, WI','Albuquerque, NM','Tucson, AZ','Sacramento, CA','Kansas City, MO','Atlanta, GA','Raleigh, NC','Miami, FL','Virginia Beach, VA','Minneapolis, MN','Tampa, FL','New Orleans, LA','Cleveland, OH','Orlando, FL','Pittsburgh, PA','Richmond, VA','Boise, ID','Baton Rouge, LA','Salt Lake City, UT','Charleston, SC','Savannah, GA','New Haven, CT','Providence, RI','State College, PA','Daytona Beach, FL','Jacksonville, FL','Los Angeles, CA','Portland, OR','Seattle, WA','Dallas, TX','Denver, CO','Miami, FL','Honolulu, HI','Anchorage, AK','Birmingham, AL','Little Rock, AR','Hartford, CT','Dover, DE','Tallahassee, FL','Boise, ID','Springfield, IL','Des Moines, IA','Topeka, KS','Frankfort, KY','Baton Rouge, LA','Augusta, ME','Annapolis, MD','Lansing, MI','Saint Paul, MN','Jackson, MS','Jefferson City, MO','Helena, MT','Lincoln, NE','Carson City, NV','Concord, NH','Trenton, NJ','Santa Fe, NM','Albany, NY','Bismarck, ND','Columbus, OH','Oklahoma City, OK','Salem, OR','Harrisburg, PA','Columbia, SC','Pierre, SD','Nashville, TN','Austin, TX','Montpelier, VT','Richmond, VA','Olympia, WA','Charleston, WV','Madison, WI','Cheyenne, WY'];
+const routes={'Philadelphia, PA|Orlando, FL':{distance:1070,driveHours:17,flyHours:6,tolls:55,hotel:'Hilton Garden Inn Savannah Airport',pit1:'Richmond, VA',pit2:'Daytona Beach, FL',fun:'Theme parks, warm weather, and family attractions.'},'New York, NY|Boston, MA':{distance:215,driveHours:4.5,flyHours:4,tolls:35,hotel:'No overnight hotel needed',pit1:'New Haven, CT',pit2:'Providence, RI',fun:'Historic neighborhoods, museums, food, and city exploring.'},'Pittsburgh, PA|Chicago, IL':{distance:460,driveHours:7.5,flyHours:4.5,tolls:40,hotel:'No overnight hotel needed',pit1:'Cleveland, OH',pit2:'Toledo, OH',fun:'Architecture, food, lakefront views, and city experiences.'},'Washington, DC|Atlanta, GA':{distance:640,driveHours:10,flyHours:4.5,tolls:22,hotel:'Charlotte midpoint hotel',pit1:'Richmond, VA',pit2:'Greenville, SC',fun:'Southern food, downtown attractions, and sightseeing.'},'Philadelphia, PA|Miami, FL':{distance:1190,driveHours:19,flyHours:6.5,tolls:60,hotel:'Savannah / Jacksonville midpoint hotel',pit1:'Richmond, VA',pit2:'Jacksonville, FL',fun:'Beaches, nightlife, warm weather, and vacation activities.'},'Los Angeles, CA|Las Vegas, NV':{distance:270,driveHours:4.5,flyHours:3.5,tolls:0,hotel:'No overnight hotel needed',pit1:'Barstow, CA',pit2:'Primm, NV',fun:'Entertainment, desert views, and nightlife.'},'Seattle, WA|Portland, OR':{distance:175,driveHours:3.2,flyHours:3.5,tolls:0,hotel:'No overnight hotel needed',pit1:'Olympia, WA',pit2:'Vancouver, WA',fun:'Coffee, food, parks, and Pacific Northwest scenery.'}};
+const presets={'phl-orl':{o:'Philadelphia, PA',d:'Orlando, FL',t:2,mpg:28,fuel:3.45,ticket:220,hotel:1},'nyc-bos':{o:'New York, NY',d:'Boston, MA',t:1,mpg:35,fuel:3.75,ticket:160,hotel:0},'pit-chi':{o:'Pittsburgh, PA',d:'Chicago, IL',t:2,mpg:28,fuel:3.45,ticket:180,hotel:0},'dc-atl':{o:'Washington, DC',d:'Atlanta, GA',t:3,mpg:28,fuel:3.45,ticket:230,hotel:1},'phl-mia':{o:'Philadelphia, PA',d:'Miami, FL',t:2,mpg:28,fuel:3.75,ticket:260,hotel:2},'la-vegas':{o:'Los Angeles, CA',d:'Las Vegas, NV',t:2,mpg:28,fuel:4.1,ticket:130,hotel:0},'sea-port':{o:'Seattle, WA',d:'Portland, OR',t:2,mpg:35,fuel:4.1,ticket:120,hotel:0}};
+const $=id=>document.getElementById(id),money=n=>'$'+Math.round(n).toLocaleString();
+function start(){const dl=$('cityList');cityOptions.forEach(c=>{let o=document.createElement('option');o.value=c;dl.appendChild(o)});document.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));btn.classList.add('active');$(btn.dataset.page).classList.add('active')}));['origin','destination','travelers','vehicleMpg','fuelPrice','flightTicket','hotelNights','tripType','travelStyle','costWeight','speedWeight','flexWeight','comfortWeight'].forEach(id=>$(id).addEventListener('input',calculate));$('preset').addEventListener('change',applyPreset);$('calculate').addEventListener('click',calculate);calculate()}
+function applyPreset(){const p=presets[$('preset').value];if(!p)return;$('origin').value=p.o;$('destination').value=p.d;$('travelers').value=p.t;$('vehicleMpg').value=p.mpg;$('fuelPrice').value=p.fuel;$('flightTicket').value=p.ticket;$('hotelNights').value=p.hotel;calculate()}
+function getRoute(o,d){return routes[o+'|'+d]||routes[d+'|'+o]||estimateRoute(o,d)}
+function estimateRoute(o,d){let seed=(o+d).split('').reduce((a,c)=>a+c.charCodeAt(0),0);let distance=260+(seed%850);return{distance,driveHours:+(distance/63).toFixed(1),flyHours:distance>700?5.5:4.5,tolls:20+(seed%45),hotel:distance>650?'Midpoint hotel suggested':'No overnight hotel needed',pit1:'First rest stop after 3 hours',pit2:'Food and fuel stop near midpoint',fun:'Local dining, sightseeing, and flexible travel activities.'}}
+function calculate(){const o=$('origin').value||'Philadelphia, PA',d=$('destination').value||'Orlando, FL',t=+$('travelers').value,mpg=+$('vehicleMpg').value,fuel=+$('fuelPrice').value,ticket=+$('flightTicket').value,hn=+$('hotelNights').value,style=$('travelStyle').value;const cw=+$('costWeight').value,sw=+$('speedWeight').value,fw=+$('flexWeight').value,comw=+$('comfortWeight').value;$('costLabel').textContent=cw;$('speedLabel').textContent=sw;$('flexLabel').textContent=fw;$('comfortLabel').textContent=comw;const r=getRoute(o,d);const gas=r.distance/mpg*fuel,tolls=r.tolls,food=Math.max(30,r.driveHours*3.5*t),hotel=hn*129,wear=r.distance*.11,drive=gas+tolls+food+hotel+wear;const airfare=ticket*t,baggage=40*t,parking=r.flyHours>4?60:35,rideshare=70,rental=r.distance>500?180:90,fly=airfare+baggage+parking+rideshare+rental;const maxCost=Math.max(drive,fly),maxTime=Math.max(r.driveHours,r.flyHours);let driveComfort=r.driveHours>9?45:70,flyComfort=78;if(style==='adventure')driveComfort+=10;if(style==='comfort'){flyComfort+=8;driveComfort-=5}const driveScore=Math.round((((1-drive/maxCost)*100*cw)+((1-r.driveHours/maxTime)*100*sw)+(82*fw)+(driveComfort*comw))/(cw+sw+fw+comw));const flyScore=Math.round((((1-fly/maxCost)*100*cw)+((1-r.flyHours/maxTime)*100*sw)+(45*fw)+(flyComfort*comw))/(cw+sw+fw+comw));const rec=driveScore>=flyScore?'DRIVE':'FLY',isFly=rec==='FLY',savings=Math.abs(drive-fly),timeDiff=Math.abs(r.driveHours-r.flyHours);update(o,d,t,r,rec,isFly,drive,fly,r.driveHours,r.flyHours,driveScore,flyScore,savings,timeDiff,{gas,tolls,food,hotel,wear,airfare,baggage,parking,rideshare,rental,cw,sw,fw,comw,hn})}
+function update(o,d,t,r,rec,isFly,drive,fly,driveH,flyH,driveScore,flyScore,savings,timeDiff,x){$('heroOrigin').textContent=o;$('heroDestination').textContent=d;$('heroSubtitle').textContent=`${$('tripType').selectedOptions[0].textContent} • ${t} traveler${t>1?'s':''} • ${$('travelStyle').selectedOptions[0].textContent}`;$('heroDecision').innerHTML=rec+'<br><span>recommended option</span>';$('driveTotal').textContent=money(drive);$('flyTotal').textContent=money(fly);$('driveTime').textContent=driveH+'h';$('flyTime').textContent=flyH+'h';$('driveScore').textContent=driveScore;$('flyScore').textContent=flyScore;$('driveBar').style.width=Math.max(3,driveScore)+'%';$('flyBar').style.width=Math.max(3,flyScore)+'%';$('resultCard').classList.toggle('fly',isFly);$('resultCard').innerHTML=`<span>${rec}</span><h4>${isFly?'Flying':'Driving'} is recommended</h4><p>${isFly?`Saves about ${timeDiff.toFixed(1)} hours and better matches speed/comfort preferences.`:`Saves about ${money(fly-drive)} and gives more flexibility for vacation stops.`}</p>`;$('savings').textContent=money(savings);$('timeDiff').textContent=timeDiff.toFixed(1)+'h';$('hiddenCosts').textContent=money(x.tolls+x.food+x.hotel+x.wear+x.baggage+x.parking+x.rideshare+x.rental);$('confidence').textContent=Math.abs(driveScore-flyScore)>15?'High':'Medium';breakdown('driveBreakdown',[['Gas',x.gas],['Tolls',x.tolls],['Food',x.food],['Hotel',x.hotel],['Vehicle wear',x.wear]]);breakdown('flyBreakdown',[['Airfare',x.airfare],['Baggage',x.baggage],['Airport parking',x.parking],['Rideshare',x.rideshare],['Rental car',x.rental]]);$('driveBreakdownTotal').textContent=money(drive);$('flyBreakdownTotal').textContent=money(fly);let maxChart=Math.max(drive,fly);$('driveChart').style.height=Math.max(30,drive/maxChart*230)+'px';$('flyChart').style.height=Math.max(30,fly/maxChart*230)+'px';$('driveChartLabel').textContent=money(drive);$('flyChartLabel').textContent=money(fly);$('bigDecision').textContent=rec;$('bigDecision').classList.toggle('fly',isFly);$('decisionTitle').textContent=isFly?'Flying is the better option based on your preferences.':'Driving is the better option based on your preferences.';$('decisionReason').textContent=isFly?'TripWise recommends flying because the weighted score favors speed, comfort, and lower travel effort for this route.':'TripWise recommends driving because the weighted score favors total cost savings, flexibility, and more control over the travel experience.';$('reasonList').innerHTML=reasons(drive,fly,r,timeDiff).map(v=>`<li>${v}</li>`).join('');$('preferenceImpact').innerHTML=`<div><b>Cost: ${x.cw}/10</b><span>${drive<fly?'Driving':'Flying'} has the lower estimated total cost.</span></div><div><b>Speed: ${x.sw}/10</b><span>Flying saves about ${timeDiff.toFixed(1)} hours.</span></div><div><b>Flexibility: ${x.fw}/10</b><span>Driving gives more control over route, stops, bags, and schedule.</span></div>`;$('stopGrid').innerHTML=`<div><b>Recommended Hotel</b><span>${r.hotel}<br>${x.hotel>0?'Good overnight midpoint for a less stressful drive.':'Hotel is not needed based on this route.'}</span></div><div><b>Pit Stop 1</b><span>${r.pit1}<br>Fuel, food, and stretch break.</span></div><div><b>Pit Stop 2</b><span>${r.pit2}<br>Final break before arrival.</span></div>`;$('timeline').innerHTML=`<div><b>Start</b><span>${o}</span></div><div><b>Break</b><span>${r.pit1}</span></div><div><b>${x.hotel>0?'Hotel Night':'Optional Stop'}</b><span>${r.hotel}</span></div><div><b>Arrive</b><span>${d}</span></div>`;itinerary(o,d,r,rec,drive,fly,driveH,flyH,x)}
+function itinerary(o,d,r,rec,drive,fly,driveH,flyH,x){$('itineraryList').innerHTML=rec==='DRIVE'?`<div class='itinerary-item'><div class='itinerary-icon'>🚗</div><div><h4>Day 1: Depart ${o}</h4><p>Start early and use ${r.pit1} as the first major stop.</p></div></div><div class='itinerary-item'><div class='itinerary-icon'>☕</div><div><h4>Midday: Rest + Food Stop</h4><p>Stop near ${r.pit1} for food, fuel, and a short break.</p></div></div><div class='itinerary-item'><div class='itinerary-icon'>🏨</div><div><h4>Evening: ${x.hotel>0?'Overnight Hotel':'Optional Local Stop'}</h4><p>${r.hotel}. ${x.hotel>0?'This keeps the road trip manageable and safer.':'No hotel is required, but a stop can make the trip more comfortable.'}</p></div></div><div class='itinerary-item'><div class='itinerary-icon'>🏝️</div><div><h4>Arrival: ${d}</h4><p>${r.fun} Estimated drive cost is ${money(drive)} with about ${driveH} hours of travel.</p></div></div>`:`<div class='itinerary-item'><div class='itinerary-icon'>✈️</div><div><h4>Departure: Fly from ${o}</h4><p>Arrive early and plan for parking, baggage, and rideshare costs.</p></div></div><div class='itinerary-item'><div class='itinerary-icon'>🧳</div><div><h4>Airport + Flight</h4><p>Flying takes about ${flyH} hours total including airport time and transportation.</p></div></div><div class='itinerary-item'><div class='itinerary-icon'>🚕</div><div><h4>Arrival Transportation</h4><p>Use rideshare or rental car after landing. These costs are included.</p></div></div><div class='itinerary-item'><div class='itinerary-icon'>🏝️</div><div><h4>Enjoy ${d}</h4><p>${r.fun} Estimated flying cost is ${money(fly)}.</p></div></div>`;$('checklist').innerHTML=`<div><b>Before Leaving</b><span>Confirm tickets, hotel, fuel, bags, route, and parking.</span></div><div><b>Money Check</b><span>Budget includes hidden costs, not just gas or airfare.</span></div><div><b>Comfort Check</b><span>Plan breaks, food, sleep, and local transportation.</span></div>`}
+function reasons(drive,fly,r,timeDiff){let arr=[];if(drive<fly)arr.push(`Driving is cheaper by approximately ${money(fly-drive)}.`);if(fly<drive)arr.push(`Flying is cheaper by approximately ${money(drive-fly)}.`);arr.push(`Flying saves approximately ${timeDiff.toFixed(1)} hours of travel time.`);arr.push('Driving gives more schedule flexibility and better control over stops.');arr.push('Hidden costs are included instead of only comparing gas against airfare.');return arr}
+function breakdown(id,items){$(id).innerHTML=items.map(([n,v])=>`<div class='row'><span>${n}</span><strong>${money(v)}</strong></div>`).join('')}
+document.addEventListener('DOMContentLoaded',start);
