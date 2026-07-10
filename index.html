@@ -1,167 +1,315 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TripWise Vacation Enhanced</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RouteWise Compass</title>
+  <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
-<div class="app">
-  <aside class="sidebar">
-    <div class="brand">
-      <div class="logo">T</div>
-      <div>
-        <h1>TRIP<span>WISE</span></h1>
-        <p>Plan smarter. Travel better.</p>
-      </div>
-    </div>
-    <button class="tab active" data-page="overview">🏝️ Trip Overview</button>
-    <button class="tab" data-page="costs">💵 Cost Breakdown</button>
-    <button class="tab" data-page="recommendation">✨ Recommendation</button>
-    <button class="tab" data-page="stops">🏨 Hotel & Stops</button>
-    <button class="tab" data-page="itinerary">🗺️ Itinerary</button>
-    <div class="side-card">
-      <small>Vacation Mode</small>
-      <strong>Drive • Fly • Plan</strong>
-      <p>Type any city/state or use autocomplete suggestions.</p>
-    </div>
-  </aside>
-
-  <main class="main">
-    <header class="hero">
-      <div>
-        <p>Drive vs Fly Vacation Decision Intelligence</p>
-        <h2><span id="heroOrigin">Philadelphia, PA</span> → <span id="heroDestination">Orlando, FL</span></h2>
-        <div id="heroSubtitle">Vacation • 2 travelers • smart recommendation</div>
-      </div>
-      <div class="badge" id="heroDecision">DRIVE<br><span>recommended option</span></div>
-    </header>
-
-    <section id="overview" class="page active">
-      <div class="layout">
-        <section class="card">
-          <div class="title-row"><h3>Trip Information</h3><span>Type or Pick</span></div>
-          <div class="form-grid">
-            <label>Starting Location
-              <input id="origin" list="cityList" value="Philadelphia, PA" placeholder="Type any city, state">
-            </label>
-            <label>Destination
-              <input id="destination" list="cityList" value="Orlando, FL" placeholder="Type any city, state">
-            </label>
-            <datalist id="cityList"></datalist>
-
-            <label>Preset Trip
-              <select id="preset">
-                <option value="">Choose a vacation scenario</option>
-                <option value="phl-orl">Philadelphia → Orlando</option>
-                <option value="nyc-bos">New York → Boston</option>
-                <option value="pit-chi">Pittsburgh → Chicago</option>
-                <option value="dc-atl">Washington DC → Atlanta</option>
-                <option value="phl-mia">Philadelphia → Miami</option>
-                <option value="la-vegas">Los Angeles → Las Vegas</option>
-                <option value="sea-port">Seattle → Portland</option>
-              </select>
-            </label>
-            <label>Trip Type
-              <select id="tripType">
-                <option value="vacation" selected>Vacation / Leisure</option>
-                <option value="family">Family Trip</option>
-                <option value="business">Business Travel</option>
-                <option value="student">Student Budget Trip</option>
-                <option value="weekend">Weekend Getaway</option>
-              </select>
-            </label>
-
-            <label>Travelers
-              <select id="travelers"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select>
-            </label>
-            <label>Vehicle Type
-              <select id="vehicleMpg">
-                <option value="22">SUV / Larger Vehicle — 22 MPG</option>
-                <option value="28" selected>Standard Sedan — 28 MPG</option>
-                <option value="35">Hybrid / Efficient Car — 35 MPG</option>
-                <option value="45">High Efficiency Hybrid — 45 MPG</option>
-              </select>
-            </label>
-            <label>Fuel Price
-              <select id="fuelPrice"><option value="3.25">$3.25 / gallon</option><option value="3.45" selected>$3.45 / gallon</option><option value="3.75">$3.75 / gallon</option><option value="4.10">$4.10 / gallon</option></select>
-            </label>
-            <label>Flight Ticket Per Person
-              <select id="flightTicket"><option value="120">$120</option><option value="180">$180</option><option value="220" selected>$220</option><option value="300">$300</option><option value="420">$420</option></select>
-            </label>
-            <label>Hotel Nights While Driving
-              <select id="hotelNights"><option value="0">0 nights</option><option value="1" selected>1 night</option><option value="2">2 nights</option><option value="3">3 nights</option></select>
-            </label>
-            <label>Travel Style
-              <select id="travelStyle"><option value="budget">Budget Friendly</option><option value="balanced" selected>Balanced</option><option value="comfort">Comfort Focused</option><option value="adventure">Scenic / Adventure</option></select>
-            </label>
-          </div>
-
-          <div class="preference">
-            <h4>Preference Weighting</h4>
-            <p>Adjust what matters most for this trip.</p>
-            <div class="slider"><span>Cost savings</span><input id="costWeight" type="range" min="1" max="10" value="8"><b id="costLabel">8</b></div>
-            <div class="slider"><span>Speed</span><input id="speedWeight" type="range" min="1" max="10" value="5"><b id="speedLabel">5</b></div>
-            <div class="slider"><span>Flexibility</span><input id="flexWeight" type="range" min="1" max="10" value="7"><b id="flexLabel">7</b></div>
-            <div class="slider"><span>Comfort</span><input id="comfortWeight" type="range" min="1" max="10" value="5"><b id="comfortLabel">5</b></div>
-          </div>
-          <button id="calculate" class="primary">Build My Trip Plan</button>
-        </section>
-
-        <section class="card vacation-card">
-          <h3>Best Recommendation</h3>
-          <div class="result-card" id="resultCard"></div>
-          <div class="metrics">
-            <div><small>Drive Cost</small><strong id="driveTotal">$0</strong></div>
-            <div><small>Fly Cost</small><strong id="flyTotal">$0</strong></div>
-            <div><small>Drive Time</small><strong id="driveTime">0h</strong></div>
-            <div><small>Fly Time</small><strong id="flyTime">0h</strong></div>
-          </div>
-          <div class="score-box">
-            <div><span>Drive Score</span><div class="bar"><div id="driveBar"></div></div><b id="driveScore">0</b></div>
-            <div><span>Fly Score</span><div class="bar"><div id="flyBar"></div></div><b id="flyScore">0</b></div>
-          </div>
-        </section>
-      </div>
-      <section class="card">
-        <h3>Vacation Snapshot</h3>
-        <div class="insights">
-          <div><strong id="savings">$0</strong><span>Estimated savings</span></div>
-          <div><strong id="timeDiff">0h</strong><span>Time difference</span></div>
-          <div><strong id="hiddenCosts">$0</strong><span>Hidden costs included</span></div>
-          <div><strong id="confidence">Medium</strong><span>Confidence</span></div>
+  <div class="app">
+    <aside class="side">
+      <div class="brand">
+        <div class="mark">RC</div>
+        <div>
+          <h1>RouteWise Compass</h1>
+          <p>Choose the smartest way to travel</p>
         </div>
-      </section>
-    </section>
-
-    <section id="costs" class="page">
-      <div class="layout">
-        <section class="card"><h3>Drive Cost Breakdown</h3><div id="driveBreakdown" class="breakdown"></div><div class="total"><span>Total Drive Cost</span><strong id="driveBreakdownTotal">$0</strong></div></section>
-        <section class="card"><h3>Fly Cost Breakdown</h3><div id="flyBreakdown" class="breakdown"></div><div class="total"><span>Total Fly Cost</span><strong id="flyBreakdownTotal">$0</strong></div></section>
       </div>
-      <section class="card"><h3>Visual Cost Comparison</h3><div class="chart"><div class="chart-col"><div class="chart-bar drive" id="driveChart"></div><span>Drive</span><b id="driveChartLabel">$0</b></div><div class="chart-col"><div class="chart-bar fly" id="flyChart"></div><span>Fly</span><b id="flyChartLabel">$0</b></div></div></section>
-    </section>
 
-    <section id="recommendation" class="page">
-      <section class="card">
-        <h3>Recommendation Reasoning</h3>
-        <div class="decision-layout"><div class="big-decision" id="bigDecision">DRIVE</div><div><h4 id="decisionTitle"></h4><p id="decisionReason"></p><ul id="reasonList"></ul></div></div>
+      <button class="nav active" data-page="plan">Trip Inputs</button>
+      <button class="nav" data-page="advisor">Travel Advisor</button>
+      <button class="nav" data-page="mapPage">USA Map</button>
+      <button class="nav" data-page="compare">Compare Options</button>
+      <button class="nav" data-page="itinerary">Itinerary</button>
+      <button class="nav" data-page="stops">Stops + Stays</button>
+      <button class="nav" data-page="explore">Explore Nearby</button>
+      <button class="nav" data-page="prep">Packing + Safety</button>
+
+      <div class="side-card">
+        <b>Expert planning logic</b>
+        <span>Does not just pick the cheapest option. It checks time, safety, comfort, luggage, budget, and realistic feasibility.</span>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="hero">
+        <div>
+          <p class="kicker">Drive • Fly • Train • Bus • Bike • Mixed</p>
+          <h2 id="heroRoute">Philadelphia, PA → Orlando, FL</h2>
+          <p id="heroText">Enter your trip details and get a practical travel plan with stops, stays, route map, and things to see.</p>
+        </div>
+        <div class="decision-tile">
+          <small>Recommended</small>
+          <strong id="heroBest">Drive</strong>
+          <span id="heroScore">Score 0</span>
+        </div>
+      </header>
+
+      <section id="plan" class="page active">
+        <div class="two-col">
+          <section class="panel">
+            <div class="title-row">
+              <h3>1. Route and trip basics</h3>
+              <span>Start here</span>
+            </div>
+            <div class="hint">
+              <b>City input:</b> Use the state dropdown to show city suggestions. You can still type any U.S. city manually if it is not listed.
+            </div>
+            <div class="form-grid">
+              <label>Start state
+                <select id="originState"></select>
+              </label>
+              <label>Starting city
+                <input id="originCity" list="originCityList" value="Philadelphia" placeholder="Type any city"/>
+                <datalist id="originCityList"></datalist>
+              </label>
+              <label>Destination state
+                <select id="destinationState"></select>
+              </label>
+              <label>Destination city
+                <input id="destinationCity" list="destinationCityList" value="Orlando" placeholder="Type any city"/>
+                <datalist id="destinationCityList"></datalist>
+              </label>
+              <label>Trip purpose
+                <select id="tripType">
+                  <option value="vacation" selected>Vacation / sightseeing</option>
+                  <option value="budget">Budget-first travel</option>
+                  <option value="bike">Bike touring / adventure</option>
+                  <option value="family">Family trip</option>
+                  <option value="business">Business travel</option>
+                  <option value="backpacking">Backpacking / flexible travel</option>
+                </select>
+              </label>
+              <label>Travelers
+                <select id="travelers">
+                  <option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option><option>6</option>
+                </select>
+              </label>
+              <label>Available travel days
+                <input id="daysAvailable" type="number" min="1" max="90" value="5"/>
+              </label>
+              <label>Total travel budget
+                <input id="budget" type="number" min="50" max="15000" step="50" value="1200"/>
+              </label>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="title-row">
+              <h3>2. What kind of traveler are you?</h3>
+              <span>Decision profile</span>
+            </div>
+            <div class="form-grid">
+              <label>Lodging preference
+                <select id="lodging">
+                  <option value="hotel" selected>Hotel / motel</option>
+                  <option value="hostel">Hostel / budget stay</option>
+                  <option value="camping">Campground / outdoors</option>
+                  <option value="mixed">Mixed low-cost lodging</option>
+                </select>
+              </label>
+              <label>Luggage
+                <select id="luggage">
+                  <option value="light">Light backpack</option>
+                  <option value="medium" selected>Medium luggage</option>
+                  <option value="heavy">Heavy luggage / gear</option>
+                </select>
+              </label>
+              <label>Bike experience
+                <select id="bikeExperience">
+                  <option value="beginner">Beginner</option>
+                  <option value="moderate" selected>Moderate</option>
+                  <option value="advanced">Advanced</option>
+                </select>
+              </label>
+              <label>Max bike miles per day
+                <input id="bikeMiles" type="number" min="15" max="130" value="65"/>
+              </label>
+              <label>Overnight comfort need
+                <select id="comfortNeed">
+                  <option value="low">Low: I can handle rough travel</option>
+                  <option value="medium" selected>Medium: balanced</option>
+                  <option value="high">High: I want low-stress travel</option>
+                </select>
+              </label>
+              <label>Trip flexibility
+                <select id="flexNeed">
+                  <option value="low">Low: fixed schedule</option>
+                  <option value="medium" selected>Medium</option>
+                  <option value="high">High: I want freedom to stop</option>
+                </select>
+              </label>
+            </div>
+
+            <h4>Priority sliders</h4>
+            <div class="sliders">
+              <div class="slider"><span>Cost</span><input id="costWeight" type="range" min="1" max="10" value="8"/><b id="costOut">8</b></div>
+              <div class="slider"><span>Speed</span><input id="speedWeight" type="range" min="1" max="10" value="6"/><b id="speedOut">6</b></div>
+              <div class="slider"><span>Comfort</span><input id="comfortWeight" type="range" min="1" max="10" value="6"/><b id="comfortOut">6</b></div>
+              <div class="slider"><span>Flexibility</span><input id="flexWeight" type="range" min="1" max="10" value="7"/><b id="flexOut">7</b></div>
+              <div class="slider"><span>Safety</span><input id="safetyWeight" type="range" min="1" max="10" value="8"/><b id="safetyOut">8</b></div>
+            </div>
+
+            <h4>Travel options to include</h4>
+            <div class="mode-picker">
+              <label><input class="mode-check" value="drive" type="checkbox" checked/> 🚗 Drive</label>
+              <label><input class="mode-check" value="fly" type="checkbox" checked/> ✈️ Fly</label>
+              <label><input class="mode-check" value="train" type="checkbox" checked/> 🚆 Train</label>
+              <label><input class="mode-check" value="bus" type="checkbox" checked/> 🚌 Bus</label>
+              <label><input class="mode-check" value="bike" type="checkbox" checked/> 🚲 Bike</label>
+              <label><input class="mode-check" value="mixed" type="checkbox" checked/> 🧭 Mixed</label>
+            </div>
+            <button id="buildPlan" class="primary">Build my travel plan</button>
+          </section>
+        </div>
+
+        <section class="panel">
+          <div class="title-row">
+            <h3>The information RouteWise needs to make a smart choice</h3>
+            <span>Why these inputs matter</span>
+          </div>
+          <div class="info-grid">
+            <div><b>Distance</b><span>Determines drive time, flight practicality, bike days, stop frequency, and whether overnight planning is needed.</span></div>
+            <div><b>Budget</b><span>Prevents fast options from winning when airport, lodging, or transfer costs make them unrealistic.</span></div>
+            <div><b>Time available</b><span>Bike, bus, and mixed travel can be cheap but only work if the traveler has enough days.</span></div>
+            <div><b>Lodging style</b><span>Changes the stay plan: hotel zones, hostels, campgrounds, and backup overnight options.</span></div>
+            <div><b>Safety + comfort</b><span>Important for avoiding recommendations that are cheap but stressful, risky, or impractical.</span></div>
+            <div><b>Luggage + bike ability</b><span>Heavy bags and low cycling experience reduce the feasibility of bike and bus-heavy plans.</span></div>
+          </div>
+        </section>
       </section>
-      <section class="card"><h3>Preference Impact</h3><div class="impact" id="preferenceImpact"></div></section>
-    </section>
 
-    <section id="stops" class="page">
-      <section class="card beach-card"><h3>Hotel & Pit Stop Suggestions</h3><p class="muted">Suggestions change based on distance, drive time, trip type, and travel style.</p><div class="stops" id="stopGrid"></div></section>
-      <section class="card"><h3>Road Trip Timeline</h3><div class="timeline" id="timeline"></div></section>
-    </section>
+      <section id="advisor" class="page">
+        <section class="advisor-card">
+          <div class="big-icon" id="winnerIcon">🚗</div>
+          <div>
+            <p class="kicker">Expert recommendation</p>
+            <h3 id="winnerTitle">Drive is recommended</h3>
+            <p id="winnerReason">RouteWise will explain the decision here.</p>
+            <div class="metrics">
+              <div><small>Total cost</small><strong id="winnerCost">$0</strong></div>
+              <div><small>Total time</small><strong id="winnerTime">0h</strong></div>
+              <div><small>Score</small><strong id="winnerScore">0</strong></div>
+              <div><small>Feasibility</small><strong id="winnerFeasible">Good</strong></div>
+            </div>
+          </div>
+        </section>
 
-    <section id="itinerary" class="page">
-      <section class="card"><div class="title-row"><h3>Smart Itinerary</h3><span>Generated Plan</span></div><p class="muted">This turns the recommendation into an actual trip plan.</p><div class="itinerary" id="itineraryList"></div></section>
-      <section class="card"><h3>Trip Checklist</h3><div class="checklist" id="checklist"></div></section>
-    </section>
-  </main>
-</div>
-<script src="app.js"></script>
+        <section class="panel">
+          <h3>Why RouteWise picked this</h3>
+          <div id="reasonGrid" class="card-grid"></div>
+        </section>
+
+        <section class="panel">
+          <h3>What you should do next</h3>
+          <div id="actionGrid" class="card-grid"></div>
+        </section>
+      </section>
+
+      <section id="mapPage" class="page">
+        <section class="panel">
+          <div class="title-row">
+            <h3>USA map route preview</h3>
+            <a id="mapsLink" class="link-button" target="_blank" rel="noopener">Open live route in Google Maps</a>
+          </div>
+          <div class="map-layout">
+            <div class="usa-map-box">
+              <svg id="usaMap" viewBox="0 0 960 560" role="img" aria-label="USA route map">
+                <rect width="960" height="560" rx="28" fill="#f7efe1"/>
+                <path class="usa-shape" d="M156 142 L240 124 L328 112 L426 118 L510 108 L604 126 L706 138 L792 174 L838 224 L826 296 L786 342 L688 374 L590 388 L500 428 L402 430 L318 404 L240 394 L178 356 L136 290 L118 214 Z"/>
+                <path class="coast west" d="M156 142 C138 188 119 224 136 290 C148 338 178 356 240 394" />
+                <path class="coast east" d="M706 138 C782 164 838 222 826 296 C810 342 770 360 688 374" />
+                <g id="stateDots"></g>
+                <path id="routePath" d="" class="route-path"/>
+                <g id="routePins"></g>
+              </svg>
+            </div>
+            <div>
+              <h4>Route details</h4>
+              <div id="mapFacts" class="mini-stack"></div>
+              <h4>How to use this map</h4>
+              <div class="mini-stack">
+                <div><b>Visual route</b><span>This shows the start, stop points, and destination across the U.S. map.</span></div>
+                <div><b>Live routing</b><span>Use the Google Maps button for exact roads, traffic, transit, bike routing, and current conditions.</span></div>
+                <div><b>Future production version</b><span>Connect Google Maps, Google Places, Amtrak, airline, bus, hotel, weather, and parks APIs for live accuracy.</span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <section id="compare" class="page">
+        <section class="panel">
+          <div class="title-row">
+            <h3>Travel mode comparison</h3>
+            <span>Cost, time, safety, comfort, flexibility</span>
+          </div>
+          <div id="modeCards" class="mode-cards"></div>
+        </section>
+        <section class="panel">
+          <h3>Cost and time bars</h3>
+          <div id="barChart" class="bars"></div>
+        </section>
+      </section>
+
+      <section id="itinerary" class="page">
+        <section class="panel">
+          <div class="title-row">
+            <h3>Recommended itinerary</h3>
+            <span id="itineraryMode">Best mode</span>
+          </div>
+          <div id="timeline" class="timeline"></div>
+        </section>
+      </section>
+
+      <section id="stops" class="page">
+        <section class="panel">
+          <div class="title-row">
+            <h3>Stops and stays</h3>
+            <span>Actual planning suggestions</span>
+          </div>
+          <div class="two-col">
+            <div>
+              <h4>Where to stay</h4>
+              <div id="stayList" class="stack"></div>
+            </div>
+            <div>
+              <h4>Where to stop</h4>
+              <div id="stopList" class="stack"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h3>Support plan</h3>
+          <div id="supportGrid" class="info-grid"></div>
+        </section>
+      </section>
+
+      <section id="explore" class="page">
+        <section class="panel">
+          <div class="title-row">
+            <h3 id="exploreTitle">Explore nearby</h3>
+            <span id="exploreScope">Route + destination</span>
+          </div>
+          <div id="exploreGrid" class="explore-grid"></div>
+        </section>
+      </section>
+
+      <section id="prep" class="page">
+        <section class="panel">
+          <div class="title-row">
+            <h3>Packing, safety, and backup checklist</h3>
+            <span>Mode-specific</span>
+          </div>
+          <div id="prepGrid" class="prep-grid"></div>
+        </section>
+      </section>
+    </main>
+  </div>
+  <script src="cityData.js"></script>
+  <script src="routeData.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
